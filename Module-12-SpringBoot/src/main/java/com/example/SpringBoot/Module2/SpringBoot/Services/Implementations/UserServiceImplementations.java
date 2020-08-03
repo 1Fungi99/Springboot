@@ -7,6 +7,7 @@ import com.example.SpringBoot.Module2.SpringBoot.Shared.Dto.UserDto;
 import com.example.SpringBoot.Module2.SpringBoot.Shared.Utils.Utils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import java.util.*;
 
 @Service
 public class UserServiceImplementations implements UserService {
@@ -19,20 +20,8 @@ public class UserServiceImplementations implements UserService {
         this.utils = utils;
     }
 
-//    @Override
-//    public List<User> getUsers() {
-//        List<User> returnValue =  new ArrayList<User>();
-//        returnValue = (List<User>) userRepository.findAll();
-//        return returnValue;
-//    }
-
-
-//    @Override
-//    public void createUser(User user) {
-//        userRepository.save(user);
-//    }
     @Override
-    public UserDto createUser(UserDto userDto){
+    public UserDto createUser(UserDto userDto) {
         User newUser = new User();
         BeanUtils.copyProperties(userDto, newUser);
 
@@ -46,23 +35,106 @@ public class UserServiceImplementations implements UserService {
         BeanUtils.copyProperties(storedUserDetails, returnValue);
 
         return returnValue;
-}
-//    @Override
-//    public User getUser(String emailAddress) {
-//        User returnValue = userRepository.findByEmailAddress(emailAddress);
-//        return returnValue;
-//    }
+    }
 
-//    @Override
-//    public Optional<User> getUserByID(Long id) {
-//        Optional<User> returnValue = userRepository.findById(id);
-//        return returnValue;
-//    }
+    @Override
+    public List<UserDto> getUsers() {
+        List<User> userList = new ArrayList<User>();
+        userList = (List<User>) userRepository.findAll();
 
-//    @Override
-//    public void deleteUserByID(Long id) {
-//        userRepository.deleteById(id);
-//    }
+        List<UserDto> returnValue = new ArrayList<UserDto>();
 
+        for (int i = 0; i < userRepository.count(); i++) {
+            returnValue.add(new UserDto());
+        }
+
+        for (int i = 0; i < userRepository.count(); i++) {
+            BeanUtils.copyProperties(userList.get(i), returnValue.get(i));
+        }
+
+        return returnValue;
+    }
+
+    @Override
+    public UserDto findUserByEmail(String emailAddress) {
+        UserDto foundDtoUser = new UserDto();
+        User foundUser = userRepository.findByEmailAddress(emailAddress);
+
+        BeanUtils.copyProperties(foundUser, foundDtoUser);
+
+        return foundDtoUser;
+    }
+
+    @Override
+    public UserDto findUserByUserId(String userId) {
+        UserDto foundDtoUser = new UserDto();
+        User foundUser = userRepository.findByUserId(userId);
+
+        BeanUtils.copyProperties(foundUser, foundDtoUser);
+
+        return foundDtoUser;
+    }
+
+    @Override
+    public UserDto updateUserByEmail(String email, UserDto requestedUpdate) {
+        User updateUser = new User();
+        BeanUtils.copyProperties(requestedUpdate, updateUser);
+
+        User oldUserData = userRepository.findByEmailAddress(email);
+        UserDto returnValue = new UserDto();
+
+        updateUser.setId(oldUserData.getId());
+        updateUser.setUserId(oldUserData.getUserId());
+        updateUser.setEncryptedPassword("test1");
+        updateUser.setEmailVerificationStatus(oldUserData.isEmailVerificationStatus());
+
+        User updatedUserDetails = userRepository.save(updateUser);
+        BeanUtils.copyProperties(updatedUserDetails, returnValue);
+
+        return returnValue;
+    }
+
+    @Override
+    public UserDto updateUserById(String userId, UserDto requestedUpdate) {
+
+        User updateUser = new User();
+        BeanUtils.copyProperties(requestedUpdate, updateUser);
+
+        User oldUserData = userRepository.findByUserId(userId);
+        UserDto returnValue = new UserDto();
+
+        updateUser.setId(oldUserData.getId());
+        updateUser.setUserId(oldUserData.getUserId());
+        updateUser.setEncryptedPassword("test1");
+        updateUser.setEmailVerificationStatus(oldUserData.isEmailVerificationStatus());
+
+        User updatedUserDetails = userRepository.save(updateUser);
+
+        BeanUtils.copyProperties(updatedUserDetails, returnValue);
+
+        return returnValue;
+    }
+
+    @Override
+    public UserDto deleteUserById(String userId) {
+        UserDto foundDtoUser = new UserDto();
+        User foundUser = userRepository.findByUserId(userId);
+
+        BeanUtils.copyProperties(foundUser, foundDtoUser);
+        userRepository.deleteById(foundUser.getId());
+
+        return foundDtoUser;
+    }
+
+    @Override
+    public UserDto deleteUserByEmail(String emailAddress) {
+        UserDto foundDtoUser = new UserDto();
+        User foundUser = userRepository.findByEmailAddress(emailAddress);
+
+        BeanUtils.copyProperties(foundUser, foundDtoUser);
+        userRepository.deleteById(foundUser.getId());
+
+        return foundDtoUser;
+    }
 
 }

@@ -1,24 +1,23 @@
 package com.example.SpringBoot.Module2.SpringBoot.Services;
 
-import com.example.SpringBoot.Module2.SpringBoot.Models.User;
 import com.example.SpringBoot.Module2.SpringBoot.Shared.Dto.UserDto;
 
 import java.util.*;
 
 public interface UserService {
-    //    @Override
-    //    public void createUser(User user) {
-    //        userRepository.save(user);
-    //    }
     UserDto createUser(UserDto userDto);
 
-//    List<User> getUsers();
-//
-//    UserDto createUser(UserDto user);
-//
-//    User getUser(String emailAddress);
-//
-//    Optional<User> getUserByID(Long id);
-//
-//    void deleteUserByID(Long id);
+    List<UserDto> getUsers();
+
+    UserDto findUserByEmail(String emailAddress);
+
+    UserDto findUserByUserId(String userId);
+
+    UserDto updateUserByEmail(String email, UserDto requestedUpdate);
+
+    UserDto updateUserById(String userId, UserDto requestedUpdate);
+
+    UserDto deleteUserById(String userId);
+
+    UserDto deleteUserByEmail(String emailAddress);
 }
